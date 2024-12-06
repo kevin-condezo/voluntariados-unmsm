@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery, useLazyQuery, gql , useMutation} from "@apollo/client";
+import { useQuery, useLazyQuery, gql, useMutation } from "@apollo/client";
 import SidebarDashboard from "../components/SidebarDashboard";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -68,7 +68,6 @@ const GET_VOLUNTEERS_BY_ORGANIZATION = gql`
   }
 `;
 
-
 const GET_ACTIVITIES_BY_VOLUNTEER = gql`
   query getActivitiesByVolunteer($id: ID!) {
     getActivitiesByVolunteer(id: $id) {
@@ -96,61 +95,57 @@ const APPROVE_USER = gql`
   }
 `;
 
-
-
-
-
 const DashboardVolunteering = () => {
   const [selectedProgram, setSelectedProgram] = useState("all");
   const [selectedOrganization, setSelectedOrganization] = useState("");
   const [volunteersByOrg, setVolunteersByOrg] = useState([]);
   const [filteredVolunteers, setFilteredVolunteers] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [selectedParticipantProgram, setSelectedParticipantProgram] = useState("");
-const [pendingUsers, setPendingUsers] = useState([]);
+  const [selectedParticipantProgram, setSelectedParticipantProgram] =
+    useState("");
+  const [pendingUsers, setPendingUsers] = useState([]);
 
-const fetchPendingUsers = async (programId) => {
-  try {
-    const { data: usersData } = await getUsersByVolunteer({
-      variables: { id: programId },
-    });
+  const fetchPendingUsers = async (programId) => {
+    try {
+      const { data: usersData } = await getUsersByVolunteer({
+        variables: { id: programId },
+      });
 
-    if (usersData?.getUsersByVolunteer) {
-      // Filtrar los usuarios que no están aprobados
-      const unapprovedUsers = usersData.getUsersByVolunteer.filter(
-        (user) => !user.approved
-      );
+      if (usersData?.getUsersByVolunteer) {
+        // Filtrar los usuarios que no están aprobados
+        const unapprovedUsers = usersData.getUsersByVolunteer.filter(
+          (user) => !user.approved
+        );
 
-      setPendingUsers(unapprovedUsers);
+        setPendingUsers(unapprovedUsers);
+      }
+    } catch (error) {
+      console.error("Error al obtener usuarios pendientes:", error);
     }
-  } catch (error) {
-    console.error("Error al obtener usuarios pendientes:", error);
-  }
-};
+  };
 
-// Función para manejar la selección del programa
-const handleParticipantProgramSelect = (programId) => {
-  setSelectedParticipantProgram(programId);
-  if (programId) fetchPendingUsers(programId);
-};
+  // Función para manejar la selección del programa
+  const handleParticipantProgramSelect = (programId) => {
+    setSelectedParticipantProgram(programId);
+    if (programId) fetchPendingUsers(programId);
+  };
 
+  const [approveUser] = useMutation(APPROVE_USER);
 
-const [approveUser] = useMutation(APPROVE_USER);
+  const handleApproveUser = async (userId) => {
+    try {
+      await approveUser({
+        variables: { volunteerId: selectedParticipantProgram, userId },
+      });
 
-const handleApproveUser = async (userId) => {
-  try {
-    await approveUser({
-      variables: { volunteerId: selectedParticipantProgram, userId },
-    });
-
-    // Eliminar el usuario aprobado de la lista local
-    setPendingUsers((prevUsers) =>
-      prevUsers.filter((user) => user.userId.id !== userId)
-    );
-  } catch (error) {
-    console.error("Error al aprobar usuario:", error);
-  }
-};
+      // Eliminar el usuario aprobado de la lista local
+      setPendingUsers((prevUsers) =>
+        prevUsers.filter((user) => user.userId.id !== userId)
+      );
+    } catch (error) {
+      console.error("Error al aprobar usuario:", error);
+    }
+  };
 
   const [totals, setTotals] = useState({
     users: 0, // Usuarios aprobados
@@ -235,6 +230,7 @@ const handleApproveUser = async (userId) => {
                 nombre: user.userId.nombre,
                 apellido: user.userId.apellido,
                 email: user.userId.email,
+                approved: user.approved,
                 program: volunteersData.getVolunteers.find(
                   (vol) => vol.id === selectedProgram
                 )?.title,
@@ -519,110 +515,134 @@ const handleApproveUser = async (userId) => {
               </div>
 
               {/* Tabla de Voluntarios */}
-              <div className="mt-6 overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              {selectedProgram !== "all" && selectedProgram !== "" ? (
+                <div className="mt-6 overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Nombre
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Apellido
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Programa
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Email
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Estado
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredVolunteers.map((volunteer, index) => (
+                        <tr key={index}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {volunteer.nombre}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {volunteer.apellido}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {volunteer.program}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {volunteer.email}
+                          </td>
+                          <td className="px-6 py-4">
+                            {volunteer.approved ? (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Aprobado
+                              </span>
+                            ) : (
+                              <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Pendiente
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="mt-6 text-gray-500 text-center">
+                  Seleccione un programa para mostrar la lista de voluntarios.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+        {activeSection === "Participants" && (
+          <div>
+            <h2 className="text-2xl font-bold p-4 bg-blue-600 text-white rounded-t-lg">
+              Participantes
+            </h2>
+            <div className="p-4 bg-white shadow rounded">
+              <label
+                htmlFor="participantProgramFilter"
+                className="block text-sm font-medium text-gray-700 pb-2"
+              >
+                Filtrar por programa:
+              </label>
+              <select
+                id="participantProgramFilter"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                value={selectedParticipantProgram}
+                onChange={(e) => handleParticipantProgramSelect(e.target.value)}
+              >
+                <option value="">Seleccione un voluntariado</option>
+                {volunteersData.getVolunteers.map((program) => (
+                  <option key={program.id} value={program.id}>
+                    {program.title}
+                  </option>
+                ))}
+              </select>
+
+              {/* Lista de usuarios pendientes */}
+              {pendingUsers.length > 0 ? (
+                <table className="min-w-full mt-4 bg-white border">
+                  <thead>
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nombre
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Apellido
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Programa
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
+                      <th className="py-2 px-4 border">Nombre</th>
+                      <th className="py-2 px-4 border">Apellido</th>
+                      <th className="py-2 px-4 border">Acción</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredVolunteers.map((volunteer, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {volunteer.nombre}
+                  <tbody>
+                    {pendingUsers.map((user) => (
+                      <tr key={user.userId.id}>
+                        <td className="py-2 px-4 border">
+                          {user.userId.nombre}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {volunteer.apellido}
+                        <td className="py-2 px-4 border">
+                          {user.userId.apellido}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {volunteer.program}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {volunteer.email}
+                        <td className="py-2 px-4 border">
+                          <button
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            onClick={() => handleApproveUser(user.userId.id)}
+                          >
+                            Aprobar
+                          </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
+              ) : (
+                <p className="mt-4 text-gray-500">
+                  {selectedParticipantProgram
+                    ? "No hay usuarios pendientes de aprobación para este programa."
+                    : "Seleccione un programa para ver los usuarios pendientes."}
+                </p>
+              )}
             </div>
           </div>
         )}
-{activeSection === "Participants" && (
-  <div>
-    <h2 className="text-2xl font-bold p-4 bg-blue-600 text-white rounded-t-lg">
-      Participantes
-    </h2>
-    <div className="p-4 bg-white shadow rounded">
-      <label
-        htmlFor="participantProgramFilter"
-        className="block text-sm font-medium text-gray-700 pb-2"
-      >
-        Filtrar por programa:
-      </label>
-      <select
-        id="participantProgramFilter"
-        className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-        value={selectedParticipantProgram}
-        onChange={(e) => handleParticipantProgramSelect(e.target.value)}
-      >
-        <option value="">Seleccione un voluntariado</option>
-        {volunteersData.getVolunteers.map((program) => (
-          <option key={program.id} value={program.id}>
-            {program.title}
-          </option>
-        ))}
-      </select>
-
-      {/* Lista de usuarios pendientes */}
-      {pendingUsers.length > 0 ? (
-        <table className="min-w-full mt-4 bg-white border">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border">Nombre</th>
-              <th className="py-2 px-4 border">Apellido</th>
-              <th className="py-2 px-4 border">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingUsers.map((user) => (
-              <tr key={user.userId.id}>
-                <td className="py-2 px-4 border">{user.userId.nombre}</td>
-                <td className="py-2 px-4 border">{user.userId.apellido}</td>
-                <td className="py-2 px-4 border">
-                  <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    onClick={() => handleApproveUser(user.userId.id)}
-                  >
-                    Aprobar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="mt-4 text-gray-500">
-          {selectedParticipantProgram
-            ? "No hay usuarios pendientes de aprobación para este programa."
-            : "Seleccione un programa para ver los usuarios pendientes."}
-        </p>
-      )}
-    </div>
-  </div>
-)}
 
         {activeSection === "activities" && (
           <div>
@@ -640,7 +660,7 @@ const handleApproveUser = async (userId) => {
               </label>
               <select
                 id="programFilter"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                 value={selectedProgram}
                 onChange={(e) => handleProgramChange(e.target.value)}
               >
