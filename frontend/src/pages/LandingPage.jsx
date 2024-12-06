@@ -4,6 +4,7 @@ import { useQuery, gql } from "@apollo/client";
 import React, { useState, useEffect } from "react";
 import CardStat from "../components/CardStat";
 import CardIcon from "../components/CardIcon";
+import { useNavigate } from "react-router-dom";
 
 const CategoryList = [
   {
@@ -59,6 +60,7 @@ const GET_USERS = gql`
 `;
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [allScores, setAllScores] = useState([]);
 
   // Ejecutar la consulta de manera automática con useQuery
@@ -139,7 +141,7 @@ const LandingPage = () => {
             <h1 className="text-4xl font-bold">¿Cómo quieres ayudar?</h1>
             <div className="p-3 bg-gray-100 rounded-lg shadow-md">
               <div className="m-4 pb-5">
-                <button className="btn btn-primary w-80 text-xl">
+                <button className="btn btn-primary w-80 text-xl" onClick={() => navigate("/register")}>
                   QUIERO SER VOLUNTARIO
                 </button>
               </div>
