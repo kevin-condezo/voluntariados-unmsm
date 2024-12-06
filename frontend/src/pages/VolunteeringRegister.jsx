@@ -83,8 +83,9 @@ const VolunteeringRegister = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    // Obtiene el ID del usuario desde localStorage
     const storedUserId = localStorage.getItem("userId");
-    setUserId(JSON.parse(storedUserId));
+    setUserId(storedUserId);
   }, []);
 
   const [formData, setFormData] = useState({

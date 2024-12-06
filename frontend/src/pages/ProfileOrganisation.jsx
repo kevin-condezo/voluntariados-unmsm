@@ -21,6 +21,8 @@ const GET_ORGANIZATION_BY_ID = gql`
   }
 `;
 
+
+
 const ProfileOrganisation = () => {
 	const { organizationId } = useParams();
   console.log(organizationId);
