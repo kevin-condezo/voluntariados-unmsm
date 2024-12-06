@@ -103,7 +103,7 @@ const EditOrganisation = () => {
 
       console.log("Organización actualizada con éxito:", data.updateOrganization);
       alert("Organización actualizada con éxito");
-      navigate("../");
+      navigate(`/${data.createOrganization.id}/profile-organization`); 
     } catch (e) {
       console.error("Error al actualizar la organización:", e.message);
       setError2("Error al actualizar la organización: " + e.message);

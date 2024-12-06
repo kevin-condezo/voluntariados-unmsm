@@ -87,7 +87,7 @@ const VolunteeringManagement = () => {
 					Volver al Perfil Organizador
 				</button>
 				<button
-					onClick={() => navigate("/dashboard-volunteering")}
+					onClick={() => navigate(`/${organizationId}/dashboard-volunteering`)}
 					className="ml-end text-white bg-blue-500 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2"
 					>
 					Ver Dashboards

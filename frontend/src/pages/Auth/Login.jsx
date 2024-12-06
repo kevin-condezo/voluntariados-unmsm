@@ -118,7 +118,7 @@ const Login = () => {
               {/* Register Link */}
               <p className="text-gray-800 text-sm !mt-8 text-center">
                 ¿No tienes cuenta?
-                <AuthLinkText href="/register" text="Registrate" className="ml-1 whitespace-nowrap" />
+                <AuthLinkText to={"/register"} text="Registrate" className="ml-1 whitespace-nowrap" />
               </p>
             </form>
           </div>
