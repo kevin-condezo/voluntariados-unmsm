@@ -52,6 +52,8 @@ const ProfileUser = () => {
 
  const [userId, setUserId] = useState(null);
  const [organizationId, setOrganizationId] = useState(null);
+ const [isReady, setIsReady] = useState(false);
+
 
  useEffect(() => {
    // Obtiene el ID del usuario desde localStorage
@@ -69,7 +71,11 @@ const ProfileUser = () => {
 const { loading: orgLoading, error: orgError, data: orgData } = useQuery(
   GET_ORGANIZATIONS
 );
-
+useEffect(() => {
+  // Simula una pausa de 3 segundos antes de mostrar la página
+  const timeout = setTimeout(() => setIsReady(true), 3000);
+  return () => clearTimeout(timeout); // Limpia el timeout al desmontar
+}, []);
 useEffect(() => {
     if (orgData && userId) {
       const organization = orgData.getOrganizations.find(
@@ -81,6 +87,10 @@ useEffect(() => {
     }
   }, [orgData, userId]);
 
+
+  if (!isReady) {
+    return <p>Cargando...</p>; // Mensaje mientras espera los 3 segundos
+  }
   if (userLoading || orgLoading) return <p>Cargando...</p>;
   if (userError) return <p>Error usuario: {userError.message}</p>;
   if (orgError) return <p>Error organizaciones: {orgError.message}</p>;
@@ -164,7 +174,7 @@ useEffect(() => {
         </div>
 
         <div className="flex justify-center space-x-4">
-            <AuthButton text="Ver mis voluntariados" className="max-w-xs" to="/search" />
+            <AuthButton text="Ver mis participaciones" className="max-w-xs" to="/user-participation" />
             {organizationId ? (
               <AuthButton
                 text="Ver mi organización"
