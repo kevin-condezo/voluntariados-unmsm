@@ -1,7 +1,7 @@
 import { MaterialSymbol } from "react-material-symbols";
 import CardIcon from "../components/CardIcon";
 import CardVolunteering from "../components/CardVolunteering";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 const GET_VOLUNTEERING = gql`
@@ -79,69 +79,6 @@ const CategoryListCard = [
   {
     title: "Otros",
     icon: "more_horiz",
-  },
-];
-
-const volunteeringList = [
-  {
-    photo:
-      "https://juventudambiental.minam.gob.pe/wp-content/uploads/2022/03/SalvaPlayas1-1024x683.jpg",
-    title: "Voluntariado Marino",
-    organization: "OMAN",
-    date: "01/01/2022",
-    location: "Lima",
-    totalVac: 10,
-    filledVac: 5,
-    category: "Medio Ambiente",
-    tags: ["Marino", "Playas"],
-  },
-  {
-    photo:
-      "https://www.prisma.org.pe/wp-content/uploads/Voluntariado.Nota_.Portada.jpg",
-    title: "Voluntariado en Educación",
-    organization: "EducaPeru",
-    date: "15/02/2022",
-    location: "Cusco",
-    totalVac: 20,
-    filledVac: 10,
-    category: "Educación",
-    tags: ["Niños", "Colegios"],
-  },
-  {
-    photo:
-      "https://cdn.www.gob.pe/uploads/document/file/4502145/Voluntariado%20CIMA%20desarrollan%20actividades%20como%20la%20arborizaci%C3%B3n%2C%20reciclaje%2C%20el%20uso%20de%20energ%C3%ADas%20renovables%20y%20otros..jpg",
-    title: "Voluntariado Ambiental",
-    organization: "GreenEarth",
-    date: "10/03/2022",
-    location: "Arequipa",
-    totalVac: 15,
-    filledVac: 7,
-    category: "Medio Ambiente",
-    tags: ["Reciclaje", "Parques"],
-  },
-  {
-    photo:
-      "https://cdn.www.gob.pe/uploads/document/file/4401758/standard_Becaria%20Dayana%20Narciso%20en%20una%20de%20las%20actividades%20de%20su%20voluntariado%20Thani%20Kirus.png",
-    title: "Voluntariado en Salud",
-    organization: "HealthFirst",
-    date: "25/04/2022",
-    location: "Trujillo",
-    totalVac: 12,
-    filledVac: 6,
-    category: "Salud",
-    tags: ["Vacunación", "Consultas"],
-  },
-  {
-    photo:
-      "https://cdn.www.gob.pe/uploads/document/file/4401758/standard_Becaria%20Dayana%20Narciso%20en%20una%20de%20las%20actividades%20de%20su%20voluntariado%20Thani%20Kirus.png",
-    title: "Voluntariado en Salud",
-    organization: "HealthFirst",
-    date: "25/04/2022",
-    location: "Trujillo",
-    totalVac: 12,
-    filledVac: 6,
-    category: "Ayuda Humanitaria",
-    tags: ["Vacunación", "Consultas"],
   },
 ];
 
