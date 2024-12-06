@@ -14,6 +14,7 @@ import VolunteeringTracking from "../pages/VolunteeringTracking";
 import DashboardVolunteering from "../pages/DashboardVolunteering";
 import VolunteeringManagement from "../pages/VolunteeringManagement";
 import VolunteeringEdit from "../pages/VolunteeringEdit";
+import UserParticipation from "../pages/ParticipationManagement";
 import ProtectedRoute from "./protectedRoute";
 
 const AppRoutes = () => {
@@ -28,6 +29,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <ProfileUser />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user-participation"
+        element={
+          <ProtectedRoute>
+            <UserParticipation />
           </ProtectedRoute>
         }
       />

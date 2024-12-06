@@ -66,11 +66,10 @@ const VolunteeringDetails = () => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
+    // Obtiene el ID del usuario desde localStorage
     const storedUserId = localStorage.getItem("userId");
     setUserId(storedUserId);
   }, []);
-
-  const cleanedUserId = "3273ed1f7a986f3a4e705f7c";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -102,9 +101,9 @@ const VolunteeringDetails = () => {
       await addUserToVolunteer({
         variables: {
           volunteerId: volunteerId,
-          userId: cleanedUserId,
+          userId: userId,
           role: "voluntario",
-          approved: true,
+          approved: false,
         },
       });
       alert("¡Te has unido al voluntariado exitosamente!");
