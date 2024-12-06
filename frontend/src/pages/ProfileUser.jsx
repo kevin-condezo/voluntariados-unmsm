@@ -2,6 +2,7 @@ import DetailsColumn from "../components/DetailsColumn";
 import AuthButton from "../components/AuthButton";
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 
 const GET_USER_BY_ID = gql`
   query getUser($id: ID!) {
@@ -27,20 +28,65 @@ const GET_USER_BY_ID = gql`
   }
 `;
 
+const GET_ORGANIZATIONS = gql`
+  query getOrganizations {
+    getOrganizations {
+      id
+      name
+      email
+      phone
+      address
+      adminId {
+        id
+      }
+    }
+  }
+`;
+
+
 const ProfileUser = () => {
+  const navigate = useNavigate();
+//  const fixedId = "674d6a55e395e6f5c9acea8e";
 
-  const fixedId = "674d6a55e395e6f5c9acea8e";
+ // localStorage.setItem("userId", fixedId);
 
-  localStorage.setItem("userId", fixedId);
+ const [userId, setUserId] = useState(null);
+ const [organizationId, setOrganizationId] = useState(null);
 
-  const { loading, error, data } = useQuery(GET_USER_BY_ID, {
-    variables: { id: fixedId },
-  });
+ useEffect(() => {
+   // Obtiene el ID del usuario desde localStorage
+   const storedUserId = localStorage.getItem("userId");
+   setUserId(storedUserId);
+ }, []);
 
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+ console.log(userId);
 
-  const user = data.getUser;
+ const { loading: userLoading, error: userError, data: userData } = useQuery(
+  GET_USER_BY_ID,
+  { variables: { id: userId }, skip: !userId }
+);
+
+const { loading: orgLoading, error: orgError, data: orgData } = useQuery(
+  GET_ORGANIZATIONS
+);
+
+useEffect(() => {
+    if (orgData && userId) {
+      const organization = orgData.getOrganizations.find(
+        (org) => org.adminId.id === userId
+      );
+      if (organization) {
+        setOrganizationId(organization.id);
+      }
+    }
+  }, [orgData, userId]);
+
+  if (userLoading || orgLoading) return <p>Cargando...</p>;
+  if (userError) return <p>Error usuario: {userError.message}</p>;
+  if (orgError) return <p>Error organizaciones: {orgError.message}</p>;
+
+
+  const user = userData.getUser;
   console.log(user);
 
     // Extraer datos del usuario para mostrarlos
@@ -118,9 +164,21 @@ const ProfileUser = () => {
         </div>
 
         <div className="flex justify-center space-x-4">
-          <AuthButton text="Ver mis voluntariados" className="max-w-xs" to="/search" />
-          <AuthButton text="Ver organización" className="max-w-xs" to="/dashboard-volunteering" />
-        </div>
+            <AuthButton text="Ver mis voluntariados" className="max-w-xs" to="/search" />
+            {organizationId ? (
+              <AuthButton
+                text="Ver mi organización"
+                className="max-w-xs"
+                onClick={() => navigate(`/${organizationId}/profile-organization`)}
+              />
+            ) : (
+              <AuthButton
+                text="Crear organización"
+                className="max-w-xs"
+                to="/create-organization"
+              />
+            )}
+          </div>
 
       </div>
     </div>

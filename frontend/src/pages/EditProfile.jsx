@@ -63,7 +63,6 @@ const UPDATE_USER_MUTATION = gql`
 `;
 
 const EditProfile = () => {
-  const [userId, setUserId] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -77,14 +76,19 @@ const EditProfile = () => {
   const [error2, setError2] = useState(null);
   const navigate = useNavigate();
 
+  const [userId, setUserId] = useState(null);
+
   useEffect(() => {
-    const storedUserId = "674d6a55e395e6f5c9acea8e";
+    // Obtiene el ID del usuario desde localStorage
+    const storedUserId = localStorage.getItem("userId");
     setUserId(storedUserId);
   }, []);
+ 
+  console.log(userId);
 
   const { loading, error, data } = useQuery(GET_USER_BY_ID, {
     variables: { id: userId },
-    skip: !userId, // Evita ejecutar la consulta si userId no está disponible
+    skip: !userId,
   });
 
   useEffect(() => {
@@ -132,7 +136,7 @@ const EditProfile = () => {
 
       console.log("Perfil actualizado con éxito:", data.updateUser);
       alert("Perfil actualizado con éxito");
-      navigate("../");
+      navigate("/profile-user");
     } catch (e) {
       console.error("Error al actualizar el perfil:", e.message);
       setError2("Error al actualizar el perfil: " + e.message);
