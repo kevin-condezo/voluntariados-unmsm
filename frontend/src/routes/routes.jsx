@@ -99,7 +99,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       <Route
-        path="/dashboard-volunteering"
+        path="/:organizationId/dashboard-volunteering"
         element={<DashboardVolunteering />}
       />
     </Routes>
