@@ -1,5 +1,6 @@
 import { MaterialSymbol } from "react-material-symbols";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const CardVolunteering = ({
   id,
@@ -46,9 +47,9 @@ const CardVolunteering = ({
           <p>{availableVac}</p>
         </div>
         <div className="card-actions justify-around flex pt-2 mt-auto">
-          <a className="btn btn-primary flex-1" href={
+          <Link className="btn btn-primary flex-1" to={
             `/${id}/details`
-          }>Únete</a>
+          }>Únete</Link>
           <button className="btn btn-outline btn-primary flex-1">
             Compartir
           </button>
